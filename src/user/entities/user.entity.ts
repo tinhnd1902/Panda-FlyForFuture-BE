@@ -12,21 +12,6 @@ export class User {
   @Column({ nullable: false })
   password: string;
 
-  @Column({ nullable: false })
-  email: string;
-
-  @Column({ nullable: false })
-  phoneNumber: string;
-
-  @Column({ nullable: true })
-  resetToken: string;
-
   @Column()
   createAt: Date;
-
-  @Column({ default: false })
-  isAdmin: boolean;
-
-  @Column({ default: 'false' })
-  verify: string;
 }

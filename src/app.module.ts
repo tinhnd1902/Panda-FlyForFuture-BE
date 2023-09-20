@@ -6,6 +6,8 @@ import { DatabaseConfig } from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { FlyforfutureModule } from './flyforfuture/flyforfuture.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { FlyforfutureModule } from './flyforfuture/flyforfuture.module';
     }),
     SocketsModule,
     FlyforfutureModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

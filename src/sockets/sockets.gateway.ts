@@ -8,7 +8,12 @@ import {
 import { Server } from 'socket.io';
 import { SocketsService } from './sockets.service';
 
-@WebSocketGateway({})
+@WebSocketGateway(3003, {
+  // transports: ['websocket'],
+  cors: {
+    origin: '*',
+  },
+})
 export class SocketsGateway implements OnModuleInit {
   constructor(private readonly socketsService: SocketsService) {}
 
@@ -18,17 +23,37 @@ export class SocketsGateway implements OnModuleInit {
   onModuleInit() {
     this.server.on('connection', async (socket) => {
       try {
-        const userId = (await this.socketsService.verify(socket)).toString();
-        console.log(userId);
+        console.log(
+          'socket.handshake.headers.authorization',
+          socket.handshake.headers.authorization,
+        );
+        const userId = await this.socketsService.verify(socket);
+
+        console.log('userId_!11', userId);
+
+        if (!userId || userId === 'null') {
+          socket.disconnect();
+          console.log('verify error');
+          return 'verify error';
+        }
+
+        const user = await this.socketsService.getSocketsByUserId(
+          userId.username,
+        );
+
+        if (user) {
+          socket.disconnect();
+          console.log('already connected');
+          return 'already connected';
+        }
+
         await this.socketsService.createSocket({
-          userId: userId,
+          userId: userId.username,
           socketId: socket.id,
         });
-        console.log(1222);
-        socket.on('disconnect', () => {
-          this.socketsService.deleteSocket(socket.id);
-        });
-      } catch {}
+      } catch {
+        return 'try error';
+      }
     });
   }
 
@@ -37,6 +62,14 @@ export class SocketsGateway implements OnModuleInit {
     this.server.emit('onMessage', {
       msg: 'newMessage',
       content: body,
+    });
+  }
+
+  @SubscribeMessage('deleteSocket')
+  deleteSocket(socket) {
+    socket.on('disconnect', () => {
+      this.socketsService.deleteSocket(socket.id);
+      socket.disconnect();
     });
   }
 }
