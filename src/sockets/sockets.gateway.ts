@@ -23,10 +23,6 @@ export class SocketsGateway implements OnModuleInit {
   onModuleInit() {
     this.server.on('connection', async (socket) => {
       try {
-        console.log(
-          'socket.handshake.headers.authorization',
-          socket.handshake.headers.authorization,
-        );
         const userId = await this.socketsService.verify(socket);
 
         console.log('userId_!11', userId);
@@ -46,7 +42,6 @@ export class SocketsGateway implements OnModuleInit {
           console.log('already connected');
           return 'already connected';
         }
-
         await this.socketsService.createSocket({
           userId: userId.username,
           socketId: socket.id,

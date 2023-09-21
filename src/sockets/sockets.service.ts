@@ -46,6 +46,13 @@ export class SocketsService {
     return this.socketsRepository.save(socket);
   }
 
+  async updateSocket(socket: { id: string; userId: string; socketId: string }) {
+    return this.socketsRepository.update(socket.id, {
+      ...socket,
+      socketId: socket.socketId,
+    });
+  }
+
   async deleteSocket(socketId: string): Promise<void> {
     await this.socketsRepository.delete({
       socketId: socketId,
